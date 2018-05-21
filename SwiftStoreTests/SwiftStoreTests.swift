@@ -113,6 +113,29 @@ class SwiftStoreTests: XCTestCase {
         XCTAssertEqual(store.findKeys(key: "r1").count, 10, "Length of r1 should be 10.")
         XCTAssertEqual(store.findKeys(key: "r2").count, 20, "Length of r2 should be 20.")
     }
+    
+    func testFindKeysWithIndex() {
+        // test non-existent key
+        XCTAssertEqual(store.findKeys(withIndex: "r0").count, 0,  "Length of r0 should be 0.")
+        for i in (0 ..< 10) {
+            let key = "r1-\(i)"
+            store[key] = "r1-\(i)"
+        }
+        for i in (0 ..< 20) {
+            let key = "r2-\(i)"
+            store[key] = "r2-\(i)"
+        }
+
+        let r1 = store.findKeys(withIndex: "r1")
+        print("Key-> \(Array(r1)[0].0) :: Value-> \(r1[Array(r1)[0].0])")
+        
+        let index = 0 // where intIndex < myDictionary.count
+        print("Key-> \(Array(r1)[index].key) || Value-> \(Array(r1)[index].value)")
+        
+        XCTAssertEqual(store.findKeys(withIndex: "r1").count, 10, "Length of r1 should be 10.")
+        XCTAssertEqual(store.findKeys(withIndex: "r2").count, 20, "Length of r2 should be 20.")
+    }
+
 
     override func tearDown() {
         store.close()

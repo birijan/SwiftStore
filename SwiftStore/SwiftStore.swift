@@ -37,6 +37,11 @@ open class SwiftStore {
   public func findKeys(key: String) -> [String] {
     return db.findKeys(key) as! [String]
   }
+    
+  public func findKeys(withIndex key: String) -> [String: String] {
+    return db.findKeys(withIndex: key) as! [String: String]
+  }
+
   
   public func deleteCollection(keys: [String]) -> Bool {
     return db.deleteBatch(keys)
