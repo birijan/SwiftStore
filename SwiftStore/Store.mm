@@ -30,6 +30,7 @@ using namespace std;
 }
 
 -(void)createDB:(NSString *) dbName {
+    NSLog(@"MyDBName %@", dbName);
   leveldb::Options options;
   options.create_if_missing = true;
   
@@ -38,6 +39,8 @@ using namespace std;
   /* Lock Folder */
   NSError *error = nil;
   NSString *dbPath = [paths[0] stringByAppendingPathComponent:dbName];
+    NSLog(@"Path:: %@", dbPath);
+
   /* Create lock file. For some reason, leveldb cannot create the LOCK directory. So we make it. */
   NSString *lockFolderPath = [dbPath stringByAppendingPathComponent:@"LOCK"];
   
@@ -71,13 +74,81 @@ using namespace std;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
     for (it->Seek(slice); it->Valid() && it->key().starts_with(slice); it->Next()) {
-        NSString *value = [[NSString alloc] initWithCString:it->value().ToString().c_str() encoding: NSUTF8StringEncoding];
+        
+//        NSString *value = [[NSString alloc] initWithCString:it->value().ToString().c_str() encoding: NSUTF32StringEncoding];
+        
+//        NSError *jsonError;
+        NSString *value = [[NSString alloc] initWithCString:it->value().ToString().c_str() encoding:NSUTF8StringEncoding];
+//        NSData *objectData = [value dataUsingEncoding:[NSString defaultCStringEncoding]];
+        
+//        NSArray *strings = [NSJSONSerialization JSONObjectWithData:objectData options:kNilOptions error:NULL];
+        
+//        const char* elems = it->value().data();
+//
+//        NSMutableString *result = [NSMutableString string];
+//        for (int i = 0; i < [objectData length]; i++)
+//        {
+//            [result appendFormat:@"%02hhx", (unsigned char)elems[i]];
+//        }
+//
+        
+        
+//        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
+//                                                             options:NSJSONReadingMutableContainers
+//                                                               error:&jsonError];
+//        NSString *key = [[NSString alloc] initWithCString:it->key().ToString().c_str() encoding: NSUTF8StringEncoding];
+//        NSArray *result = [self getBytes: key];
+        
+//        NSString *value = @(it->value().ToString().c_str());
         [array addObject:value];
     }
     delete it;
     
     return array;
 }
+
+-(NSArray *)findMatchingKeys:(NSString *)key {
+    leveldb::ReadOptions readOptions;
+    leveldb::Iterator *it = db->NewIterator(readOptions);
+    
+    leveldb::Slice slice = leveldb::Slice(key.UTF8String);
+    
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    for (it->Seek(slice); it->Valid() && it->key().starts_with(slice); it->Next()) {
+        NSString *value = [[NSString alloc] initWithCString:it->key().ToString().c_str() encoding:NSUTF8StringEncoding];
+        [array addObject:value];
+    }
+    delete it;
+    
+    return array;
+}
+
+-(NSArray *)getBytes:(NSString *)key {
+
+    std::string data;
+    leveldb::Slice slice = leveldb::Slice(key.UTF8String);
+    leveldb::Status status = db->Get(leveldb::ReadOptions(), slice, &data);
+
+    if (status.ok()) {
+        int size = data.size();
+
+        char* elems = const_cast<char*>(data.data());
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+
+//        jbyteArray array = env->NewByteArray(size * sizeof(jbyte));
+        [array addObject: @(elems)];
+//        env->SetByteArrayRegion(array, 0, size, reinterpret_cast<jbyte*>(elems));
+//        LOGI("Successfully reading a byte array");
+        return array;
+
+    } else {
+        std::string err("Failed to get a byte array: " + status.ToString());
+//        throwException(env, err.c_str());
+        return NULL;
+    }
+}
+
 
 -(NSDictionary *)findKeysWithIndex:(NSString *)key {
     leveldb::ReadOptions readOptions;

@@ -24,6 +24,8 @@
 
 -(NSArray *)findKeys:(NSString *)key;
 
+-(NSArray *)findMatchingKeys:(NSString *)key;
+
 -(NSDictionary *)findKeysWithIndex:(NSString *)key;
 
 -(void)close;

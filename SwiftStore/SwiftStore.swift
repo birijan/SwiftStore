@@ -38,6 +38,10 @@ open class SwiftStore {
     return db.findKeys(key) as! [String]
   }
     
+  public func find(matchingKeys: String) -> [String] {
+    return db.find(matchingKeys: matchingKeys) as! [String]
+  }
+    
   public func findKeys(withIndex key: String) -> [String: String] {
     return db.findKeys(withIndex: key) as! [String: String]
   }
