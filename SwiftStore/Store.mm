@@ -65,13 +65,15 @@ using namespace std;
   }
 }
 
--(NSArray *)findKeys:(NSString *)key {
+-(NSArray *)findKeys:(NSString *)key limit:(NSInteger)limit {
     leveldb::ReadOptions readOptions;
     leveldb::Iterator *it = db->NewIterator(readOptions);
     
     leveldb::Slice slice = leveldb::Slice(key.UTF8String);
 
     NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    NSInteger count = 0;
     
     for (it->Seek(slice); it->Valid() && it->key().starts_with(slice); it->Next()) {
         
@@ -101,13 +103,18 @@ using namespace std;
         
 //        NSString *value = @(it->value().ToString().c_str());
         [array addObject:value];
+        count++;
+        
+        if (limit >= 0 && limit == count) {
+            break;
+        }
     }
     delete it;
     
     return array;
 }
 
--(NSArray *)findMatchingKeys:(NSString *)key {
+-(NSArray *)findMatchingKeys:(NSString *)key limit:(NSInteger)limit {
     leveldb::ReadOptions readOptions;
     leveldb::Iterator *it = db->NewIterator(readOptions);
     
@@ -115,9 +122,18 @@ using namespace std;
     
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
+    NSInteger count = 0;
+    
     for (it->Seek(slice); it->Valid() && it->key().starts_with(slice); it->Next()) {
         NSString *value = [[NSString alloc] initWithCString:it->key().ToString().c_str() encoding:NSUTF8StringEncoding];
         [array addObject:value];
+        
+        count++;
+        
+        if (limit >= 0 && limit == count) {
+            break;
+        }
+
     }
     delete it;
     

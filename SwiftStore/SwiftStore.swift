@@ -34,12 +34,12 @@ open class SwiftStore {
     return db.iterate(key) as! [String]
   }
     
-  public func findKeys(key: String) -> [String] {
-    return db.findKeys(key) as! [String]
+  public func findKeys(key: String, limit: Int) -> [String] {
+    return db.findKeys(key, limit: limit) as! [String]
   }
     
-  public func find(matchingKeys: String) -> [String] {
-    return db.find(matchingKeys: matchingKeys) as! [String]
+  public func find(matchingKeys: String, limit: Int) -> [String] {
+    return db.find(matchingKeys: matchingKeys, limit: limit) as! [String]
   }
     
   public func findKeys(withIndex key: String) -> [String: String] {

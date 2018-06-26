@@ -22,9 +22,9 @@
 
 -(NSArray *)iterate:(NSString *)key;
 
--(NSArray *)findKeys:(NSString *)key;
+-(NSArray *)findKeys:(NSString *)key limit:(NSInteger)limit;
 
--(NSArray *)findMatchingKeys:(NSString *)key;
+-(NSArray *)findMatchingKeys:(NSString *)key limit:(NSInteger)limit;
 
 -(NSDictionary *)findKeysWithIndex:(NSString *)key;
 
